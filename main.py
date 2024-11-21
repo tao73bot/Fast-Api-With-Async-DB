@@ -5,6 +5,7 @@ from fastapi.exceptions import HTTPException
 from pydantic import BaseModel
 from typing import List
 from todos.routes import router as todos_router
+from users.routes import router as users_router
 
 # Initialize the database
 async def lifespan(app: FastAPI):
@@ -19,3 +20,4 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(todos_router, prefix="/todos", tags=["todos"])
+app.include_router(users_router, prefix="/users", tags=["users"])
