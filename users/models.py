@@ -1,5 +1,6 @@
-from sqlalchemy import Column,Integer,String,Boolean
+from sqlalchemy import Column,String,Boolean
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 from config import Base
 import uuid
 
@@ -11,6 +12,8 @@ class User(Base):
     email: str = Column(String, nullable=False)
     hash_password: str = Column(String, nullable=False)
     is_verified: bool = Column(Boolean, nullable=False)
+
+    # todos = relationship("Todo", back_populates="user")
 
     def __repr__(self) -> str:
         return f"User: {self.username}"
