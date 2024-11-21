@@ -13,7 +13,7 @@ class User(Base):
     hash_password: str = Column(String, nullable=False)
     is_verified: bool = Column(Boolean, nullable=False)
 
-    # todos = relationship("Todo", back_populates="user")
+    todos = relationship("Todo", back_populates="users")
 
     def __repr__(self) -> str:
         return f"User: {self.username}"

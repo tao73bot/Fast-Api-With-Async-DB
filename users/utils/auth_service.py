@@ -1,6 +1,8 @@
 import jwt
 from config import settings
 from datetime import datetime, timedelta
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
 
 def create_access_token(data: dict, expires_delta: timedelta = None) -> str:
     to_encode = data.copy()
@@ -20,3 +22,5 @@ def verify_token(token: str)-> dict:
         return None
     except Exception as e:
         return None
+    
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")

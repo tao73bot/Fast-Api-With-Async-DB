@@ -6,7 +6,7 @@ from typing import List
 from config import get_db
 # from .models import Todo
 from .schemas import TodoCreate, TodoUpdate, TodoList, TodoModel
-from .service import TodoService
+from .service import TodoService, get_current_user
 
 router = APIRouter()
 service = TodoService()
@@ -24,7 +24,10 @@ async def get_todo_by_id(todo_id: str, db: AsyncSession = Depends(get_db)):
     return todo
 
 @router.post("/", status_code=status.HTTP_201_CREATED,response_model=TodoModel)
-async def create_todo(todo: TodoCreate, db: AsyncSession = Depends(get_db)):
+async def create_todo(
+    todo: TodoCreate, 
+    db: AsyncSession = Depends(get_db)
+):
     new_todo = await service.create_todo(todo, db)
     return new_todo
 

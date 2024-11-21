@@ -12,7 +12,7 @@ class Todo(Base):
     description: str = Column(String, nullable=False)
     completed: bool = Column(Boolean, nullable=False)
 
-    # user = relationship("User", back_populates="todos")
+    users = relationship("User", back_populates="todos")
 
     def __repr__(self) -> str:
         return f"Todo: {self.title}"
