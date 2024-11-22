@@ -8,15 +8,17 @@ from sqlalchemy.ext.asyncio.session import AsyncSession
 from config import get_db
 from users.utils.auth_service import oauth2_scheme, verify_token
 from users.models import User
+import uuid
 
 async def get_current_user(token: str = Depends(oauth2_scheme),db: AsyncSession = Depends(get_db)):
     async with db as session:
         user = verify_token(token)
         if user is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
-        username = user.get("sub")
-        result = await session.execute(select(User).filter(User.username == username))
+        email = user.get("sub")
+        result = await session.execute(select(User).filter(User.email == email))
         user = result.scalars().first()
+        print(user)
         if user is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
         return user
@@ -36,17 +38,30 @@ class TodoService:
             todo = result.scalars().first()
             return todo
         
-    async def create_todo(self, todo: TodoCreate,db: AsyncSession = get_db()):
+    async def create_todo(self, todo: TodoCreate,db: AsyncSession = get_db(),current_user = Depends(get_current_user)):
         async with db as session:
-            todo_data = todo.model_dump()
-            new_todo = Todo(**todo_data)
+            print(current_user.id)
+            user_exist = await session.execute(select(User).where(User.id == current_user.id))
+            if user_exist.scalars().first() is None:
+                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You are not allowed to create this todo")
+            # todo_data = todo.model_dump()
+            new_todo = Todo(
+                id = uuid.uuid4(),
+                user_id=uuid.UUID(str(current_user.id)),
+                title = todo.title,
+                description = todo.description,
+                completed = todo.completed,
+            )
             session.add(new_todo)
             await session.commit()
             await session.refresh(new_todo)
             return new_todo
         
-    async def update_todo(self, todo_id: uuid.UUID, todo: TodoUpdate, db: AsyncSession = get_db()):
+    async def update_todo(self, todo_id: uuid.UUID, todo: TodoUpdate, db: AsyncSession = get_db(),current_user = Depends(get_current_user)):
         async with db as session:
+            author = await session.execute(select(Todo.user_id).where(Todo.user_id == current_user.id and Todo.id == todo_id))
+            if author.scalars().one_or_none() is None:
+                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You are not allowed to update this todo")
             statement = select(Todo).where(Todo.id == todo_id)
             result = await session.execute(statement)
             existing_todo = result.scalars().first()
@@ -57,9 +72,13 @@ class TodoService:
                 await session.commit()
                 return existing_todo
             return None
+
     
-    async def delete_todo(self, todo_id: uuid.UUID, db: AsyncSession = get_db()):
+    async def delete_todo(self, todo_id: uuid.UUID, db: AsyncSession = get_db(),current_user = Depends(get_current_user)):
         async with db as session:
+            author = await session.execute(select(User).where(Todo.user_id == current_user.id and Todo.id == todo_id))
+            if author.scalars().first() is None:
+                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You are not allowed to update this todo")
             statement = select(Todo).where(Todo.id == todo_id)
             result = await session.execute(statement)
             todo = result.scalars().first()

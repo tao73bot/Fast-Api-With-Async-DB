@@ -66,4 +66,13 @@ class UserService:
                             "user": {"email": user.email, "id": str(user.id)}
                         }
                     )
+                
+
+    
+    async def logout_user(self, token: str, db: AsyncSession = get_db()):
+        async with db as session:
+            user = verify_token(token)
+            if user is None:
+                return JSONResponse(content={"message": "Invalid token"})
+            return JSONResponse(content={"message": "Logout successful"})
         
