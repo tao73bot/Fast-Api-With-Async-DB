@@ -8,3 +8,9 @@ def send_email(subject:str, recipient:str, body:str):
     print(f"Body:\n{body}\n")
     return "Email sent (simulated)"
     
+
+celery_app.conf.update(
+    task_routes={
+        'apps.tasks.send_email': {'queue': 'email'},
+    }
+)

@@ -56,7 +56,7 @@ class TodoService:
             session.add(new_todo)
             await session.commit()
             await session.refresh(new_todo)
-            send_email(
+            send_email.delay(
                 subject="New Post Created",
                 recipient=current_user.username,  # Assuming username is unique for demo
                 body=f"Dear {current_user.username},\n\nYou created a post titled '{new_todo.title}'."

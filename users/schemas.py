@@ -29,3 +29,6 @@ class UserUpdate(BaseModel):
 class UserPasswordUpdate(BaseModel):
     password: str
     new_password: str
+
+class EmailModel(BaseModel):
+    address: List[str]

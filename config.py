@@ -17,6 +17,17 @@ class Settings(BaseSettings):
     jwt_secret_key: str = os.getenv('JWT_SECRET')
     jwt_algorithm: str = os.getenv('JWT_ALGORITHM')
     jwt_expires_s: int = 1800
+    MAIL_USERNAME: str = os.getenv('MAIL_USERNAME')
+    MAIL_PASSWORD: str = os.getenv('MAIL_PASSWORD')
+    MAIL_FROM: str = os.getenv('MAIL_FROM')
+    MAIL_PORT: int = os.getenv('MAIL_PORT')
+    MAIL_SERVER: str = os.getenv('MAIL_SERVER')
+    MAIL_FROM_NAME: str = os.getenv('MAIL_FROM_NAME')
+    MAIL_STARTTLS: bool = True
+    MAIL_SSL_TLS: bool = False
+    USE_CREDENTIALS: bool = True
+    VALIDATE_CERTS: bool = True
+    DOMAIN: str = os.getenv('DOMAIN')
 
 settings = Settings()
 
