@@ -12,7 +12,7 @@ router = APIRouter()
 service = TodoService()
 
 @router.get("/", response_model=TodoList)
-async def get_all_todos(db: AsyncSession = Depends(get_db)):
+async def get_all_todos(db: AsyncSession = Depends(get_db),current_user = Depends(get_current_user)):
     todos = await service.get_all_todos(db)
     return {"todos": todos}
 

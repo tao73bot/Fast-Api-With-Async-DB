@@ -8,6 +8,7 @@ class UserCreate(BaseModel):
     hash_password: str
 
 class UserLogin(BaseModel):
+    username: str
     email: EmailStr
     password: str
 
@@ -32,3 +33,8 @@ class UserPasswordUpdate(BaseModel):
 
 class EmailModel(BaseModel):
     address: List[str]
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str

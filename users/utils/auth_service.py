@@ -23,4 +23,4 @@ def verify_token(token: str)-> dict:
     except Exception as e:
         return None
     
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/login")

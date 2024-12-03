@@ -4,9 +4,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from typing import List
 from config import get_db
-from .schemas import EmailModel, UserCreate, UserLogin, UserResponse
+from .schemas import EmailModel, UserCreate, UserLogin, UserResponse,TokenResponse
 from .service import UserService
-from tasks import send_email
+from celery_worker import send_email
 from mail import create_message, mail
 
 
@@ -32,7 +32,7 @@ async def signup(user: UserCreate, db: AsyncSession = Depends(get_db)):
     new_user = await service.create_user(user, db)
     return new_user
 
-@router.post("/login", response_model=UserResponse, status_code=status.HTTP_200_OK)
+@router.post("/login", response_model=TokenResponse, status_code=status.HTTP_200_OK)
 async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
     if await service.user_exits(user.email, db):
         user = await service.login_user(user.email, user.password, db)
